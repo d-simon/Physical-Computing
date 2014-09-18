@@ -22,10 +22,11 @@ void loop () {
 	if (currentState != lastState) {
         isPlaying = false;
         buttonSequence[inputCounter][0] = currentState;
-        buttonSequence[inputCounter][1] = (inputCounter > 0) ? millis() - lastTimePressed : 0;
+        if (inputCounter > 0) buttonSequence[inputCounter-1][1] = millis() - lastTimePressed;
+        else buttonSequence[0][1] = 0;
         lastTimePressed = millis();
-        buttonSequenceLength = inputCounter+1;
         inputCounter++;
+        buttonSequenceLength = inputCounter+1;
         digitalWrite(PIN_LED, currentState);
 	}
 
