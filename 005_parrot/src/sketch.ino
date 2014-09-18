@@ -2,11 +2,10 @@
 #define PIN_BUTTON 13
 
 int lastState;
-int buttonState;
 int buttonSequence[100][2];
 int buttonSequenceLength = 0;
 int inputCounter = 0;
-boolean playing = false;
+boolean isPlaying = false;
 
 long lastTimePressed = 0;
 long timeoutDelay = 2000;
@@ -21,7 +20,7 @@ void loop () {
 	int currentState = !digitalRead(PIN_BUTTON);
 
 	if (currentState != lastState) {
-        playing = false;
+        isPlaying = false;
         buttonSequence[inputCounter][0] = currentState;
         buttonSequence[inputCounter][1] = (inputCounter > 0) ? millis() - lastTimePressed : 0;
         lastTimePressed = millis();
@@ -30,25 +29,23 @@ void loop () {
         digitalWrite(PIN_LED, currentState);
 	}
 
-    if ((millis() - lastTimePressed) > timeoutDelay &&
-        currentState != true &&
-        buttonSequenceLength > 2)
+    if ((millis() - lastTimePressed) > timeoutDelay
+        && currentState != true
+        && buttonSequenceLength > 1)
     {
-        playing = true;
-        lastState = currentState;
+        isPlaying = true;
         inputCounter = 0;
     }
 
     lastState = currentState;
 
-	if (playing) {
+	if (isPlaying) {
 	    for (int i = 0; i < buttonSequenceLength; i++) {
             digitalWrite(PIN_LED, buttonSequence[i][0]);
             delay(buttonSequence[i][1]);
         }
 
-        buttonState = false;
-		playing = false;
+		isPlaying = false;
         buttonSequenceLength = 0;
 
         digitalWrite(PIN_LED, LOW);
